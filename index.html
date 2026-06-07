@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tip Calculator with Bill Split</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f1419;color:#e6edf3;min-height:100vh;padding:2rem 1rem;line-height:1.6}
+.app{max-width:680px;margin:0 auto}
+h1{text-align:center;font-size:1.5rem;margin-bottom:1.5rem}
+.card{background:#1a2027;border:1px solid #2a3441;border-radius:12px;padding:1.5rem;margin-bottom:1rem}
+.field{margin-bottom:1rem}
+.field label{font-size:.8rem;color:#8b949e;display:block;margin-bottom:.3rem}
+.field input{width:100%;background:#0f1419;border:1px solid #2a3441;color:#e6edf3;padding:.6rem .8rem;border-radius:6px;font-size:1.1rem;font-family:"SF Mono",Monaco,monospace;outline:none}
+.field input:focus{border-color:#14b8a6}
+.tip-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:.5rem;margin-bottom:1rem}
+.tip-grid button{background:#0f1419;border:1px solid #2a3441;color:#e6edf3;padding:.6rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.95rem}
+.tip-grid button.active{background:#14b8a6;color:#000;border-color:#14b8a6}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.5rem;margin-top:1rem}
+.stat{background:#0f1419;border:1px solid #14b8a6;border-radius:8px;padding:1rem;text-align:center}
+.stat .label{color:#8b949e;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem}
+.stat .v{color:#2dd4bf;font-size:1.3rem;font-weight:600;font-family:"SF Mono",Monaco,monospace}
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>Tip Calculator</h1>
+  <div class="card">
+    <div class="field"><label>Bill Amount ($)</label><input id="bill" type="number" value="58.40" step="0.01"></div>
+    <div style="font-size:.8rem;color:#8b949e;margin-bottom:.3rem">Tip %</div>
+    <div class="tip-grid">
+      <button onclick="setTip(10)">10%</button>
+      <button onclick="setTip(15)">15%</button>
+      <button onclick="setTip(18)" id="t18" class="active">18%</button>
+      <button onclick="setTip(20)">20%</button>
+      <button onclick="setTip(25)">25%</button>
+    </div>
+    <div class="field"><label>Custom Tip %</label><input id="tip" type="number" value="18" step="0.5" oninput="setCustom()"></div>
+    <div class="field"><label>Number of People</label><input id="ppl" type="number" value="2" min="1"></div>
+  </div>
+  <div class="card">
+    <div class="results" id="r"></div>
+  </div>
+</div>
+<script>
+let currentTip=18;
+function setTip(t){
+  currentTip=t;
+  document.getElementById("tip").value=t;
+  document.querySelectorAll(".tip-grid button").forEach(b=>b.classList.remove("active"));
+  event.target.classList.add("active");
+  calc();
+}
+function setCustom(){currentTip=+document.getElementById("tip").value;calc();}
+function fmt2(n){return "$"+n.toFixed(2)}
+function calc(){
+  const bill=+document.getElementById("bill").value;
+  const ppl=Math.max(1,+document.getElementById("ppl").value);
+  const tip=bill*currentTip/100;
+  const total=bill+tip;
+  const perPerson=total/ppl;
+  document.getElementById("r").innerHTML=`
+    <div class="stat"><div class="label">Tip Amount</div><div class="v">${fmt2(tip)}</div></div>
+    <div class="stat"><div class="label">Total Bill</div><div class="v">${fmt2(total)}</div></div>
+    <div class="stat"><div class="label">Per Person</div><div class="v">${fmt2(perPerson)}</div></div>
+    <div class="stat"><div class="label">Tip / Person</div><div class="v">${fmt2(tip/ppl)}</div></div>
+  `;
+}
+calc();
+</script>
+</body>
+</html>
